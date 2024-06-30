@@ -4,6 +4,13 @@ name: "Terraform CI"
 on:
   pull_request:
   push: { branches: [main] }
+  workflow_dispatch:
+    inputs:
+      working_directory:
+        default: "."
+        description: "Directory to run terraform"
+        required: false
+        type: string
 
 jobs:
   terraform:
@@ -41,50 +48,50 @@ jobs:
         run: terraform fmt -check -recursive
         continue-on-error: true
 
-      # - name: Terraform init
-      #   id: init
-      #   run: terraform init
-      #   working-directory: ${{ env.working-directory }}
+      - name: Terraform init
+        id: init
+        run: terraform init
+        working-directory: ${{ inputs.working_directory }}
 
-      # - name: Terraform validate
-      #   id: validate
-      #   run: terraform validate
+      - name: Terraform validate
+        id: validate
+        run: terraform validate
 
-      # - name: Terraform plan
-      #   id: plan
-      #   run: terraform plan -no-color
-      #   working-directory: ${{ env.working-directory }}
+      - name: Terraform plan
+        id: plan
+        run: terraform plan -no-color
+        working-directory: ${{ inputs.working_directory }}
 
-      # - name: Plan output
-      #   id: output
-      #   uses: actions/github-script@v7
-      #   if: github.event_name == 'pull_request'
-      #   env:
-      #     PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     script: |
-      #       const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-      #       ### Workspace
+      - name: Plan output
+        id: output
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            ### Workspace
 
-      #       \`${process.env.TF_WORKSPACE}\`
+            \`${process.env.TF_WORKSPACE}\`
 
-      #       #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-      #       #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-      #       <details><summary>Show Plan</summary>
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+            <details><summary>Show Plan</summary>
 
-      #       \`\`\`hcl
-      #       ${process.env.PLAN}
-      #       \`\`\`
+            \`\`\`hcl
+            ${process.env.PLAN}
+            \`\`\`
 
-      #       </details>
+            </details>
 
-      #       **Pusher**: @${{ github.actor }}
-      #       **Action**: ${{ github.event_name }}
-      #       `;
-      #       github.issues.createComment({
-      #         issue_number: context.issue.number,
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         body: output
-      #       })
+            **Pusher**: @${{ github.actor }}
+            **Action**: ${{ github.event_name }}
+            `;
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })

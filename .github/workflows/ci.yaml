@@ -7,6 +7,9 @@ on:
 
 jobs:
   terraform:
+    defaults:
+      run:
+        working-directory: ./services/access-state-backend-with-github-oidc-provider
     runs-on: ubuntu-latest
     permissions:
       id-token: write # This is required for requesting the JWT
@@ -44,7 +47,6 @@ jobs:
       - name: Terraform init
         id: init
         run: terraform init
-        working-directory: ./services/access-state-backend-with-github-oidc-provider
 
       - name: Terraform validate
         id: validate
@@ -53,7 +55,6 @@ jobs:
       - name: Terraform plan
         id: plan
         run: terraform plan -no-color
-        working-directory: ${{ inputs.working_directory }}
 
       - name: Plan output
         id: output

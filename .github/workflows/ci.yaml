@@ -4,13 +4,6 @@ name: "Terraform CI"
 on:
   pull_request:
   push: { branches: [main] }
-  workflow_dispatch:
-    inputs:
-      working_directory:
-        default: "."
-        description: "Directory to run terraform"
-        required: false
-        type: string
 
 jobs:
   terraform:

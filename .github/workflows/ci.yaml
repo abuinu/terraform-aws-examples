@@ -51,7 +51,7 @@ jobs:
       - name: Terraform init
         id: init
         run: terraform init
-        working-directory: ${{ inputs.working_directory }}
+        working-directory: ./services/access-state-backend-with-github-oidc-provider
 
       - name: Terraform validate
         id: validate
